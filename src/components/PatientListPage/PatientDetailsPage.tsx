@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Patient } from "../../types";
+import { Patient, Entry } from '../../types';
 import patientService from "../../services/patients";
-import { Box, Typography, CircularProgress } from "@mui/material";
+import { Box, Typography, CircularProgress, List, ListItem, ListItemText } from "@mui/material";
 import FemaleIcon from '@mui/icons-material/Female';
 import MaleIcon from '@mui/icons-material/Male';
 
@@ -34,13 +34,40 @@ const PatientDetailsPage = () => {
         Patient Details
       </Typography>
       {patient ? (
-        <Box border={1} borderColor="primary.main" p={2} borderRadius={8}>
+        <Box >
           <Typography variant="h5">
             {patient.name}
             <GenderIcon gender={patient.gender} />
           </Typography>
           <Typography variant="body1">Occupation: {patient.occupation}</Typography>
           <Typography variant="body1">ssh: {patient.ssn}</Typography>
+          <Typography variant="h5" marginTop="20px" marginBottom="20px">
+            entries
+          </Typography>
+          {patient.entries.map((entry: Entry) => {
+            return (
+              <div key={entry.id}>
+                <Typography variant="body1">
+                  <strong>
+                    {entry.date} {entry.description}
+                  </strong>
+                </Typography>
+                {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
+                  <div>
+                    <Typography variant="body1"></Typography>
+                    <List>
+                      {entry.diagnosisCodes.map((code) => (
+                        <ListItem key={code}>
+                          <ListItemText primary={code} />
+                        </ListItem>
+                      ))}
+                    </List>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
         </Box>
       ) : (
         <Box display="flex" justifyContent="center" alignItems="center" height="100px">
