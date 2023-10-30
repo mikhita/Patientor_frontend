@@ -1,11 +1,24 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Patient, Entry } from '../../types';
+import { Patient, Entry, Diagnoses } from '../../types';
 import patientService from "../../services/patients";
 import { Box, Typography, CircularProgress, List, ListItem, ListItemText } from "@mui/material";
 import FemaleIcon from '@mui/icons-material/Female';
 import MaleIcon from '@mui/icons-material/Male';
+import diagnosesDataApi from "../../services/diagnosesDataApi";
 
+let diagnosesData: Diagnoses[] = [];
+
+async function loadDiagnosesData() {
+  try {
+    const data = await diagnosesDataApi.getAllDiagnoses();
+    diagnosesData = data;
+  } catch (error) {
+    console.error("Error fetching diagnosis data: ", error);
+  }
+}
+
+loadDiagnosesData();
 
 const PatientDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -24,10 +37,15 @@ const PatientDetailsPage = () => {
     fetchPatient();
   }, [id]);
   const GenderIcon = ({ gender }: { gender: string }) => {
-    // Render the appropriate icon based on the gender
     return gender === "male" ? <MaleIcon /> : <FemaleIcon />;
   };
+  
+  const getDiagnosisDescription = (code: string) => {
+    const diagnosis = diagnosesData.find((diagnosis) => diagnosis.code === code);
+    return diagnosis ? diagnosis.name : "Unknown";
+  };
 
+  
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
@@ -58,7 +76,7 @@ const PatientDetailsPage = () => {
                     <List>
                       {entry.diagnosisCodes.map((code) => (
                         <ListItem key={code}>
-                          <ListItemText primary={code} />
+                          <ListItemText primary={code}  secondary={getDiagnosisDescription(code)}/>
                         </ListItem>
                       ))}
                     </List>
