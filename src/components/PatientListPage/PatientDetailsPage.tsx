@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Patient, Entry, Diagnoses } from '../../types';
+import { Patient, Entry, Diagnoses, HealthCheckEntry } from '../../types';
 import patientService from "../../services/patients";
 import { Box, Typography, CircularProgress, List, ListItem, ListItemText } from "@mui/material";
 import FemaleIcon from '@mui/icons-material/Female';
 import MaleIcon from '@mui/icons-material/Male';
+import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
+import WorkIcon from '@mui/icons-material/Work';
 import diagnosesDataApi from "../../services/diagnosesDataApi";
+import HealthRatingBar from "../HealthRatingBar";
+
 
 let diagnosesData: Diagnoses[] = [];
 
@@ -39,12 +43,27 @@ const PatientDetailsPage = () => {
   const GenderIcon = ({ gender }: { gender: string }) => {
     return gender === "male" ? <MaleIcon /> : <FemaleIcon />;
   };
+  const TypeOfHealth = ({ type }: { type: string }) => {
+  return (
+    <>
+      {type === "OccupationalHealthcare" ? (
+        <>
+          FBI <WorkIcon />
+        </>
+      ) : (
+        <>
+      <MedicalServicesIcon />
+        </>
+      )}
+    </>
+  );
+};
   
   const getDiagnosisDescription = (code: string) => {
     const diagnosis = diagnosesData.find((diagnosis) => diagnosis.code === code);
     return diagnosis ? diagnosis.name : "Unknown";
   };
-
+  
   
   return (
     <Box>
@@ -64,11 +83,22 @@ const PatientDetailsPage = () => {
           </Typography>
           {patient.entries.map((entry: Entry) => {
             return (
-              <div key={entry.id}>
+              <Box border={2} borderRadius={2} borderColor="black" marginBottom={3} marginTop={3} padding={2} key={entry.id}>
+                <Typography variant="body1" >
+                    {entry.date} 
+                    {"    "}
+                    <TypeOfHealth type={entry.type} />
+                </Typography>
                 <Typography variant="body1">
-                  <strong>
-                    {entry.date} {entry.description}
-                  </strong>
+                   {entry.description}
+                </Typography>
+                {entry.type === "HealthCheck" && (
+                  <div>
+                    <HealthRatingBar showText={true} rating={(entry as HealthCheckEntry).healthCheckRating} />
+                  </div>
+                )}
+                <Typography variant="body1">
+                    {`diagnoses by ${entry.specialist}`} 
                 </Typography>
                 {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
                   <div>
@@ -82,7 +112,7 @@ const PatientDetailsPage = () => {
                     </List>
                   </div>
                 )}
-              </div>
+              </Box>
             );
           })}
 
