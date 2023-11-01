@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Patient, Entry, Diagnoses, HealthCheckEntry } from '../../types';
-import patientService from "../../services/patients";
+import { Patient, Entry, Diagnoses, HealthCheckEntry, HealthCheckEntryType } from '../../types';
+import patientService, { addEntryToPatient } from "../../services/patients";
 import { Box, Typography, CircularProgress, List, ListItem, ListItemText } from "@mui/material";
 import FemaleIcon from '@mui/icons-material/Female';
 import MaleIcon from '@mui/icons-material/Male';
@@ -9,6 +9,8 @@ import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import WorkIcon from '@mui/icons-material/Work';
 import diagnosesDataApi from "../../services/diagnosesDataApi";
 import HealthRatingBar from "../HealthRatingBar";
+import AddEntryForm from "../AddEntryModal/AddEntryForm";
+
 
 
 let diagnosesData: Diagnoses[] = [];
@@ -64,6 +66,29 @@ const PatientDetailsPage = () => {
     return diagnosis ? diagnosis.name : "Unknown";
   };
   
+  const patientId = 'd2773336-f723-11e9-8f0b-362b9e155667';
+  const handleAddEntry = async (entry: HealthCheckEntryType) => {
+    try {
+      // Add the entry to the patient data
+      const addedEntry = await addEntryToPatient(patientId, entry); // Replace 'patientId' with the actual patient ID
+
+      // Update the patient state when the Promise resolves
+      setPatient((prevPatient) => {
+        if (prevPatient) {
+          // Make sure you handle the case when prevPatient is null (no patient found)
+          return {
+            ...prevPatient,
+            entries: [...prevPatient.entries, addedEntry],
+          };
+        } else {
+          return null; // Handle the case when no patient is found
+        }
+      });
+    } catch (error) {
+      // Handle errors, e.g., display an error message
+      console.error('Error adding entry:', error);
+    }
+  };
   
   return (
     <Box>
@@ -78,6 +103,7 @@ const PatientDetailsPage = () => {
           </Typography>
           <Typography variant="body1">Occupation: {patient.occupation}</Typography>
           <Typography variant="body1">ssh: {patient.ssn}</Typography>
+          {/* <AddEntryForm/> */}<AddEntryForm onAddEntry={handleAddEntry} patientId={patient.id} />
           <Typography variant="h5" marginTop="20px" marginBottom="20px">
             entries
           </Typography>

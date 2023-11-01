@@ -38,7 +38,14 @@ export interface HealthCheckEntry extends BaseEntry {
   type: "HealthCheck";
   healthCheckRating: HealthCheckRating;
 }
-
+export interface HealthCheckEntryType {
+  type: "HealthCheck";
+  description: string;
+  date: string;
+  specialist: string;
+  healthCheckRating: HealthCheckRating;
+  diagnosisCodes: string[];
+}
 interface HospitalEntry extends BaseEntry {
   type: "Hospital";
   discharge: {
@@ -46,6 +53,7 @@ interface HospitalEntry extends BaseEntry {
     criteria: string;
   };
 }
+
 
 interface OccupationalHealthcareEntry extends BaseEntry {
   type: "OccupationalHealthcare";
@@ -74,3 +82,5 @@ export interface Diagnoses {
   name: string,
   latin?: string
 }
+
+export type NewEntry = UnionOmit<Entry, 'id'>;
