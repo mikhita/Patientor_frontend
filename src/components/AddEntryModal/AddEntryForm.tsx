@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { TextField, Button } from '@mui/material';
 import { addEntryToPatient } from '../../services/patients';
 import { HealthCheckEntryType, HealthCheckRating } from '../../types';
+import DateFieldValue from './DataFieldFormat';
+
 
 interface AddEntryFormProps {
   onAddEntry: (entry: HealthCheckEntryType) => void;
@@ -53,11 +55,7 @@ const AddEntryForm: React.FC<AddEntryFormProps> = ({ onAddEntry, patientId }) =>
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
-      <TextField
-        label="Date"
-        value={date}
-        onChange={(e) => setDate(e.target.value)}
-      />
+      <DateFieldValue date={date} setDate={setDate} />
       <TextField
         label="Specialist"
         value={specialist}
